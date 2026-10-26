@@ -154,13 +154,22 @@ const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAY
     {
       title: '输出设置', ic: 'adjustments',
       fields: [
-        { key: 'auto_tts', label: '自动 TTS', type: 'bool', hint: '拦截 LLM 回复生成语音' },
-        { key: 'send_text_with_tts', label: 'TTS 同步发送文字', type: 'bool' },
+        { key: 'auto_tts', label: '自动 TTS', type: 'bool', hint: '总开关；私聊/群聊细分见「会话范围」' },
         { key: 'send_text_async', label: '文字异步发送', type: 'bool', hint: '开启且保留文字输出时，文字先行、语音后台合成后追加（分段模式与全文模式均生效）' },
         { key: 'audio_format', label: '音频格式', type: 'select', options: ['wav', 'mp3', 'ogg'] },
         { key: 'emotion_override', label: '默认情感覆盖', type: 'text', hint: '留空=自动检测' },
-        { key: 'tts_example_inject', label: 'TTS 风格示例注入', type: 'bool', hint: '开启后按当前情感（emotion）匹配风格示例池，将画面感示例并入 user 控制通道。默认关闭：避免未经实测改变播报风格' },
-        { key: 'probability', label: '自动 TTS 触发概率', type: 'slider', min: 0, max: 1, step: 0.1 }
+        { key: 'tts_example_inject', label: 'TTS 风格示例注入', type: 'bool', hint: '开启后按当前情感（emotion）匹配风格示例池，将画面感示例并入 user 控制通道。默认关闭：避免未经实测改变播报风格' }
+      ]
+    },
+    {
+      title: '会话范围', ic: 'messages',
+      fields: [
+        { key: 'private_auto_tts', label: '私聊自动语音', type: 'bool' },
+        { key: 'private_probability', label: '私聊触发概率', type: 'slider', min: 0, max: 1, step: 0.05 },
+        { key: 'private_send_text', label: '私聊同步发送文字', type: 'bool', hint: '关闭时尽量只发语音' },
+        { key: 'group_auto_tts', label: '群聊自动语音', type: 'bool' },
+        { key: 'group_probability', label: '群聊触发概率', type: 'slider', min: 0, max: 1, step: 0.05 },
+        { key: 'group_send_text', label: '群聊同步发送文字', type: 'bool', hint: '关闭时尽量只发语音' }
       ]
     },
     {

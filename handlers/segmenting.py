@@ -148,7 +148,7 @@ async def execute_segmented_reply(
         probability=plugin.config.segment_voice_probability,
     )
     fallback_enabled = plugin.config.segment_text_fallback
-    text_enabled = plugin._should_send_text_with_tts(uid)
+    text_enabled = plugin._should_send_text_with_tts(uid, bool(event.get_group_id()))
     text_async = plugin._should_send_text_async(uid)
     polish_enabled = plugin._voice_polish_enabled(uid)
     # 展示文字用润色后文本：文字与语音内容一致（兜底小模型改写原文）

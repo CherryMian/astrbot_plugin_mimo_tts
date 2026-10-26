@@ -78,7 +78,7 @@ async def handle_ttsconfig(plugin, event: AstrMessageEvent):
         f"方言: {uset['dialect'] or '(无)'}  音量: {uset['volume'] or '(正常)'}",
         f"笑声: {'开' if uset['laughter'] else '关'}  停顿: {'开' if uset['pause'] else '关'}",
         f"当前对话自动 TTS: {'开' if uset.get('tts_enabled', True) else '关'}",
-        f"当前对话文字同步: {'开' if plugin._should_send_text_with_tts(uid) else '关'}",
+        f"当前对话文字同步: {'开' if plugin._should_send_text_with_tts(uid, bool(event.get_group_id())) else '关'}",
         f"音色: {uset['voice']}",
         f"输出模式: {plugin._tts_mode_label(plugin._resolve_tts_mode(uid))} ({plugin._resolve_tts_mode(uid)})",
         f"格式: {plugin._get_effective_audio_format(uid)}",

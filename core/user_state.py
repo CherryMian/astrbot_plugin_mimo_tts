@@ -10,7 +10,7 @@ import json
 import threading
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from astrbot.api import logger
 
@@ -307,13 +307,17 @@ class UserStateManager:
         self.touch_user(uid)
         return self._user_settings[uid]
 
-    def should_send_text_with_tts(self, uid: str, normalize_tts_mode) -> bool:
+    def should_send_text_with_tts(
+        self, uid: str, normalize_tts_mode, is_group: Optional[bool] = None
+    ) -> bool:
         """Check if text should be sent alongside TTS audio."""
         text_enabled = self.get_settings(uid, normalize_tts_mode).get(
             "text_enabled", None
         )
         if text_enabled is None:
-            return self._config.send_text_with_tts
+            if is_group is None:
+                return self._config.send_text_with_tts
+            return self._config.scope_send_text(is_group)
         return bool(text_enabled)
 
     def should_send_text_async(self, uid: str, normalize_tts_mode) -> bool:

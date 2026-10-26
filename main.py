@@ -135,8 +135,12 @@ class MiMoTTSPlugin(Star):
     def _get_event_settings(self, event: AstrMessageEvent) -> tuple[str, dict]:
         return self.user_state.get_event_settings(event, normalize_tts_mode)
 
-    def _should_send_text_with_tts(self, uid: str) -> bool:
-        return self.user_state.should_send_text_with_tts(uid, normalize_tts_mode)
+    def _should_send_text_with_tts(
+        self, uid: str, is_group: Optional[bool] = None
+    ) -> bool:
+        return self.user_state.should_send_text_with_tts(
+            uid, normalize_tts_mode, is_group
+        )
 
     def _should_send_text_async(self, uid: str) -> bool:
         return self.user_state.should_send_text_async(uid, normalize_tts_mode)
@@ -150,12 +154,17 @@ class MiMoTTSPlugin(Star):
     def _get_effective_audio_format(self, uid: str) -> str:
         return self.user_state.get_effective_audio_format(uid)
 
-    def _is_tts_active(self, uid: str) -> bool:
+    def _is_tts_active(self, uid: str, is_group: Optional[bool] = None) -> bool:
         if not self.config.get("auto_tts", True):
             return False
         if not self._get_user_settings(uid).get("tts_enabled", True):
             return False
-        probability = self.config.probability
+        if is_group is None:
+            probability = self.config.probability
+        else:
+            if not self.config.scope_auto_tts(is_group):
+                return False
+            probability = self.config.scope_probability(is_group)
         if probability <= 0:
             return False
         if probability >= 1:

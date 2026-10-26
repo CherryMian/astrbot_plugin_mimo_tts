@@ -473,6 +473,13 @@ class ConfigManager:
         "audio_format": "wav",
         "min_text_length": 5,
         "max_text_length": 500,
+        # Scope settings (private / group)
+        "private_auto_tts": True,
+        "private_probability": 0.8,
+        "private_send_text": True,
+        "group_auto_tts": True,
+        "group_probability": 0.8,
+        "group_send_text": True,
         # Segmentation
         "enable_segmentation": False,
         "segment_pattern": "sentence",
@@ -520,6 +527,7 @@ class ConfigManager:
 
     def __init__(self, config: dict):
         raw_cfg: dict = config or {}
+        self._astrbot_config = config
 
         # Clean legacy fields
         raw_cfg.pop("singing_mode", None)
@@ -574,6 +582,36 @@ class ConfigManager:
         """Set a config value (updates both flat and nested dicts)."""
         self._flat[key] = value
         self._set_nested(key, value)
+
+    def save(self) -> bool:
+        """Persist to AstrBot config file when available."""
+        save = getattr(self._astrbot_config, "save_config", None)
+        if not callable(save):
+            return False
+        try:
+            save()
+            return True
+        except Exception as e:
+            logger.warning("MiMO TTS: config save failed: %s", e)
+            return False
+
+    # ── Scope (private / group) accessors ──
+
+    def scope_auto_tts(self, is_group: bool) -> bool:
+        key = "group_auto_tts" if is_group else "private_auto_tts"
+        return bool(self._flat.get(key, True))
+
+    def scope_probability(self, is_group: bool) -> float:
+        key = "group_probability" if is_group else "private_probability"
+        try:
+            value = float(self._flat.get(key, self.probability))
+        except (ValueError, TypeError):
+            value = self.probability
+        return max(0.0, min(1.0, value))
+
+    def scope_send_text(self, is_group: bool) -> bool:
+        key = "group_send_text" if is_group else "private_send_text"
+        return bool(self._flat.get(key, self.send_text_with_tts))
 
     # ── Typed property accessors ──
 

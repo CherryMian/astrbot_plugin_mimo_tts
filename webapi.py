@@ -53,6 +53,7 @@ async def api_update_config(plugin):
     for k, v in body.items():
         if k in allowed_keys:
             plugin.config.set(k, v)
+    plugin.config.save()
     return jsonify({"status": "ok"})
 
 

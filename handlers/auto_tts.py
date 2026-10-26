@@ -63,15 +63,18 @@ async def send_tts_audio_background(
 async def handle_auto_tts(plugin, event: AstrMessageEvent) -> None:
     """拦截 LLM 输出并自动生成语音回复（分段投递或全文单次合成）。"""
     uid, uset = plugin._get_event_settings(event)
+    is_group = bool(event.get_group_id())
 
     # Step 1: 概率与前置过滤（静默出口均记录原因，便于平台侧排障）
-    if not plugin._is_tts_active(uid):
+    if not plugin._is_tts_active(uid, is_group):
         logger.info(
-            "MiMO TTS: auto TTS inactive, skip. (auto_tts=%s tts_enabled=%s "
-            "probability=%s — may be dice miss)",
+            "MiMO TTS: auto TTS inactive, skip. (scope=%s auto_tts=%s scope_enabled=%s "
+            "tts_enabled=%s probability=%s — may be dice miss)",
+            "group" if is_group else "private",
             plugin.config.get("auto_tts", True),
+            plugin.config.scope_auto_tts(is_group),
             plugin._get_user_settings(uid).get("tts_enabled", True),
-            plugin.config.probability,
+            plugin.config.scope_probability(is_group),
         )
         return
 
@@ -125,7 +128,7 @@ async def handle_auto_tts(plugin, event: AstrMessageEvent) -> None:
     display_polished = polish_enabled and plugin.config.display_polished_text
     tts_text = plain
 
-    if plugin._should_send_text_with_tts(uid):
+    if plugin._should_send_text_with_tts(uid, is_group):
         if plugin._should_send_text_async(uid):
             if display_polished:
                 tts_text = await plugin._polish_text_with_llm(plain, uid)

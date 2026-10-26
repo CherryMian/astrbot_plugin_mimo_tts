@@ -133,8 +133,8 @@
     "items": {
       "probability": {
         "type": "float",
-        "description": "自动 TTS 触发概率",
-        "hint": "全局开关：0=不触发，1=每次都触发。不通过则跳过润色/分段",
+        "description": "自动 TTS 触发概率（旧）",
+        "hint": "已由「会话范围」中的私聊/群聊概率接管，此项仅保留兼容",
         "default": 0.8,
         "slider": {
           "min": 0.0,
@@ -145,13 +145,13 @@
       "auto_tts": {
         "type": "bool",
         "description": "自动 TTS",
-        "hint": "拦截 LLM 回复生成语音",
+        "hint": "总开关：拦截 LLM 回复生成语音；关闭后私聊/群聊都不自动生成",
         "default": true
       },
       "send_text_with_tts": {
         "type": "bool",
-        "description": "TTS 输出时同步发送文字",
-        "hint": "开启时保留原文本并附加语音；关闭时尽量只发送语音",
+        "description": "TTS 输出时同步发送文字（旧）",
+        "hint": "自动 TTS 已改用「会话范围」中的私聊/群聊设置；此项仅用于无法判断会话类型时",
         "default": true
       },
       "send_text_async": {
@@ -177,6 +177,58 @@
         "description": "最大文本长度",
         "hint": "超过此字数截断（MiMO 单次上限约 5000）",
         "default": 500
+      }
+    }
+  },
+  "scope_settings": {
+    "description": "会话范围",
+    "type": "object",
+    "items": {
+      "private_auto_tts": {
+        "type": "bool",
+        "description": "私聊自动语音",
+        "hint": "私聊中 LLM 回复是否自动生成语音（需总开关「自动 TTS」开启）",
+        "default": true
+      },
+      "private_probability": {
+        "type": "float",
+        "description": "私聊触发概率",
+        "hint": "0=不触发，1=每次都触发",
+        "default": 0.8,
+        "slider": {
+          "min": 0.0,
+          "max": 1.0,
+          "step": 0.05
+        }
+      },
+      "private_send_text": {
+        "type": "bool",
+        "description": "私聊同步发送文字",
+        "hint": "开启时文字+语音；关闭时尽量只发语音",
+        "default": true
+      },
+      "group_auto_tts": {
+        "type": "bool",
+        "description": "群聊自动语音",
+        "hint": "群聊中 LLM 回复是否自动生成语音（需总开关「自动 TTS」开启）",
+        "default": true
+      },
+      "group_probability": {
+        "type": "float",
+        "description": "群聊触发概率",
+        "hint": "0=不触发，1=每次都触发",
+        "default": 0.8,
+        "slider": {
+          "min": 0.0,
+          "max": 1.0,
+          "step": 0.05
+        }
+      },
+      "group_send_text": {
+        "type": "bool",
+        "description": "群聊同步发送文字",
+        "hint": "开启时文字+语音；关闭时尽量只发语音",
+        "default": true
       }
     }
   },

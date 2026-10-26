@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-10-26 v2.4.2-cm1（CherryMian fork）
+
+> 基于上游 v2.4.2：私聊/群聊会话范围开关 + Voice Studio 保存落盘修复。
+
+### 新增
+
+- **会话范围 `scope_settings`**：`private_auto_tts` / `private_probability` / `private_send_text` / `group_auto_tts` / `group_probability` / `group_send_text`，私聊与群聊分别控制自动语音开关、触发概率、是否同步发送文字（群聊判定 `bool(event.get_group_id())`）。
+- AstrBot 插件配置面板新增「会话范围」分组；Voice Studio「配置」页新增「会话范围」卡片。
+- 旧 `output_settings.probability` / `send_text_with_tts` 仅在无法判断会话类型时兜底。
+
+### 修复
+
+- **Voice Studio 保存不落盘**：`webapi.api_update_config` 原仅修改内存，重启即丢；现调用新增的 `ConfigManager.save()` 写回 AstrBot 配置。
+
 ## 2026-10-04 v2.4.2
 
 > **日志器规范合规修复**（移除内置 `logging` 回退分支）。
