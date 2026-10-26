@@ -66,6 +66,32 @@ def strip_markdown_symbols(text: str) -> str:
     return _MD_HEADING_RE.sub("", s).strip()
 
 
+_ACTION_BRACKET_RE = re.compile(r"[（(]([^（）()]*)[）)]")
+
+
+def strip_action_brackets(text: str) -> str:
+    """去除括号内的动作/神态描写（如 ``（尾巴慢慢晃）``），避免被 TTS 朗读。
+
+    括号内容全部为 MiMo 官方风格词（如 ``(活泼)``、``(温柔 甜美)``）时保留，
+    交给服务端作风格标签；[音频标签] 不受影响。
+    """
+    if not text:
+        return text
+    from .style_lib import FLAT_OFFICIAL_TAGS
+
+    def _repl(m: re.Match) -> str:
+        words = [w for w in re.split(r"[\s,，、]+", m.group(1)) if w]
+        if words and all(w in FLAT_OFFICIAL_TAGS for w in words):
+            return m.group(0)
+        return ""
+
+    s = _ACTION_BRACKET_RE.sub(_repl, str(text))
+    s = re.sub(r"[ \t]+\n", "\n", s)
+    s = re.sub(r"\n[ \t]+", "\n", s)
+    s = re.sub(r"\n{3,}", "\n\n", s)
+    return re.sub(r"[ \t]{2,}", " ", s).strip()
+
+
 _TTS_STYLE_LEADING_RE = re.compile(r"^(?:\s*[（(][^）)]{1,12}[）)])+")
 _TTS_AUDIO_TAG_RE = re.compile(r"[\[【][^\]】]{1,20}[\]】]")
 

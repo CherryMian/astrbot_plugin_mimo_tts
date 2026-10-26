@@ -160,6 +160,12 @@
         "hint": "开启时文字立即发送，语音后台合成后追加；关闭时等待语音合成完成后一起发送",
         "default": false
       },
+      "strip_action_brackets": {
+        "type": "bool",
+        "description": "语音不读括号动作描写",
+        "hint": "合成前去掉（尾巴慢慢晃）这类括号内容；括号内全是官方风格词（如 (活泼)）时保留。只影响语音，文字照常显示",
+        "default": true
+      },
       "audio_format": {
         "type": "string",
         "description": "音频输出格式",

@@ -470,6 +470,7 @@ class ConfigManager:
         "auto_tts": True,
         "send_text_with_tts": True,
         "send_text_async": False,
+        "strip_action_brackets": True,
         "audio_format": "wav",
         "min_text_length": 5,
         "max_text_length": 500,
@@ -726,6 +727,10 @@ class ConfigManager:
     @property
     def send_text_async(self) -> bool:
         return bool(self._flat.get("send_text_async", False))
+
+    @property
+    def strip_action_brackets(self) -> bool:
+        return bool(self._flat.get("strip_action_brackets", True))
 
     @property
     def default_pitch(self) -> int:

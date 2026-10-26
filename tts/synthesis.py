@@ -22,7 +22,11 @@ from ..core.style_lib import (
     match_style_examples,
     style_words_to_hint,
 )
-from ..core.text_utils import log_tts_text, strip_markdown_symbols
+from ..core.text_utils import (
+    log_tts_text,
+    strip_action_brackets,
+    strip_markdown_symbols,
+)
 from ..tts.mimo_provider import MiMOProvider
 from ..tts.prompt_builder import build_control_prompt
 from .sing import prepare_sing
@@ -515,6 +519,15 @@ class TTSSynthesizer:
             # Markdown 符号清洗（唱歌歌词豁免）：上游 LLM 常输出 **加粗**
             # 等符号，TTS 会原样读出；保留 (风格) 与 [音频标签]
             final_text = strip_markdown_symbols(text)
+            if self._config.strip_action_brackets:
+                final_text = strip_action_brackets(final_text)
+                if not final_text:
+                    logger.info(
+                        "MiMO TTS: text empty after stripping action brackets, skip. "
+                        "uid=%s",
+                        uid,
+                    )
+                    return None
 
         # 说出口的正文 = final_text；director 标注便于对回场景（design 本不注入）
         director_mode = (
